@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button, View, StyleSheet, TextInput } from 'react-native'
 import { Title } from 'react-native-paper'
 import Fire from '../../Firebase'
+import ImagePicker from 'react'
 
 export default class SignUp extends Component {
 
@@ -10,9 +11,47 @@ export default class SignUp extends Component {
         this.state = {
             email: '',
             username: '',
-            password: ''
+            password: '',
+            resourcePath: {}, 
         }
     }
+
+    chooseImage = () =>{
+        let options = {
+            title: "Select Image",
+            customButtons:[
+                {
+                    name_1: 'customOptionkey',
+                    title: 'Choose file from Custom Option'
+                },
+            ],
+            storageOptions:{
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+
+        ImagePicker.showImagePicker(options, res =>{
+            console.log('Response = ', res);
+
+            if(res.didCancel){
+                console.log('User cancelled image picker');
+            }
+            else if(res.error){
+                console.log("Image Picker Error: ", res.error);
+            }
+            else if(res.customButtons){
+                console.log("User tapped custom button: ", res.customButtons);
+                alert(res.customButtons)
+            }
+            else{
+                let source = res;
+                this.setState({
+                    resourcePath: source
+                });
+            }
+        });
+    };
 
     handlePress = () =>{
         const user = { 
@@ -59,6 +98,11 @@ export default class SignUp extends Component {
                         placeholder = 'Password'
                         style = {styles.passwordInput}
                         onChangeText = {this.onChangeTextPassword}
+                    />
+
+                    <Button
+                        title = "Choose an avatar"
+                        onPress = {this.chooseImage}
                     />
                     
                     <Button 

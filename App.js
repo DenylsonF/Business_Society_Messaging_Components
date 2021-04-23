@@ -4,12 +4,12 @@ import { StyleSheet, Text, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
 
-import LoginScreen from './Components/Authorization/Login'
-import Home from './Components/Authorization/Home'
-import Signup from './Components/Authorization/SignUp'
-import AddRoom from './Components/Authorization/AddRoom'
+import LoginScreen from './Components/Authorization/Login.js'
+import Home from './Components/Authorization/Home.js'
+import Signup from './Components/Authorization/SignUp.js'
+import AddRoom from './Components/Authorization/AddRoom.js'
 import { IconButton } from 'react-native-paper'
-import Room from './Components/Authorization/Room'
+import Room from './Components/Authorization/Room.js'
 
 
 const Stack = createStackNavigator();
