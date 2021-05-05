@@ -2,7 +2,13 @@ import React, { Component } from 'react'
 import { Button, View, StyleSheet, TextInput } from 'react-native'
 import { Title } from 'react-native-paper'
 import Fire from '../../Firebase'
-import ImagePicker from 'react'
+import Image from './Image'
+
+const options = {
+    title: 'my pic app',
+    takePhotoButtonTitle: 'Take photo with your camera',
+    chooseFromLibraryButtonTitle: 'Choose photo from library',
+}
 
 export default class SignUp extends Component {
 
@@ -12,52 +18,60 @@ export default class SignUp extends Component {
             email: '',
             username: '',
             password: '',
-            resourcePath: {}, 
+            image: null
         }
+        this.Image = this.Image.bind(this);
+    }
+    
+    Image(props) {
+
+        useEffect ( async() =>{
+            if(Platform.OS !== 'web'){
+                const {status} = await ImagePicker.requestLibraryPermissionsAsync();
+                if (status !== 'granted'){
+                    alert("Permission denied")
+                }
+            }
+        }, [])
+    
+        const PickImage = async () =>{
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1
+            })
+            
+            console.log(result)
+            if(!result.cancelled){
+                this.setState({image : result.uri})
+            }
+        }
+    
+    
+        return (
+            <View>
+                <Button title = "Choose an avatar" onPress = {PickImage}/>
+            </View>
+        )
     }
 
-    chooseImage = () =>{
-        let options = {
-            title: "Select Image",
-            customButtons:[
-                {
-                    name_1: 'customOptionkey',
-                    title: 'Choose file from Custom Option'
-                },
-            ],
-            storageOptions:{
-                skipBackup: true,
-                path: 'images',
-            },
-        };
-
-        ImagePicker.showImagePicker(options, res =>{
-            console.log('Response = ', res);
-
-            if(res.didCancel){
-                console.log('User cancelled image picker');
-            }
-            else if(res.error){
-                console.log("Image Picker Error: ", res.error);
-            }
-            else if(res.customButtons){
-                console.log("User tapped custom button: ", res.customButtons);
-                alert(res.customButtons)
-            }
-            else{
-                let source = res;
-                this.setState({
-                    resourcePath: source
-                });
-            }
-        });
-    };
 
     handlePress = () =>{
-        const user = { 
-            name: this.state.username,
-            email: this.state.email ,
-            password: this.state.password
+        if (this.state.image == null ){
+            const user = { 
+                name: this.state.username,
+                email: this.state.email ,
+                password: this.state.password,
+            }
+        }
+        else{
+            const user = { 
+                name: this.state.username,
+                email: this.state.email ,
+                password: this.state.password,
+                image: this.state.image,
+            }
         }
         
         const response = Fire.shared.createAccount(user)
@@ -100,10 +114,7 @@ export default class SignUp extends Component {
                         onChangeText = {this.onChangeTextPassword}
                     />
 
-                    <Button
-                        title = "Choose an avatar"
-                        onPress = {this.chooseImage}
-                    />
+                    <Image image = {this.state.image} />
                     
                     <Button 
                         title = 'register'

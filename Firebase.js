@@ -37,6 +37,7 @@ class Fire{
     
     createAccount = async user =>{
         console.log('Sign up')
+        console.log(user)
 
         await firebase
             .auth()
@@ -44,7 +45,12 @@ class Fire{
             .then(
                 function (){
                     var userf = firebase.auth().currentUser;
-                    userf.updateProfile({ displayName: user.name });
+                    if (user.image){
+                        userf.updateProfile({ displayName: user.name, photoURL: user.image});
+                    }
+                    else{
+                        userf.updateProfile({ displayName: user.name});
+                    }
                 }
             )
             
